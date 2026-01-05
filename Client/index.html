@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ro">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Store Reserve - Colecție Premium</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.2/axios.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1a1a1a',
+                        secondary: '#f3f4f6',
+                        accent: '#4f46e5',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        .product-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes fade-in-up {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fade-in-up 1s ease-out;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Loading animation */
+        .loading-dots {
+            display: inline-block;
+        }
+        .loading-dots:after {
+            content: '';
+            animation: dots 1.5s steps(5, end) infinite;
+        }
+        @keyframes dots {
+            0%, 20% { content: ''; }
+            40% { content: '.'; }
+            60% { content: '..'; }
+            80%, 100% { content: '...'; }
+        }
+
+        /* Smooth scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4f46e5;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3730a3;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-2xl font-bold text-gray-900 tracking-tight">Smart<span
+                            class="text-accent">Store</span></span>
+                </div>
+                
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#" class="text-gray-900 hover:text-accent font-medium">Colecție</a>
+                    <a href="#" class="text-gray-500 hover:text-accent font-medium">Rezervările Mele</a>
+                    <a href="#" class="text-gray-500 hover:text-accent font-medium">Conectare</a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-button" class="text-gray-500 hover:text-gray-900 focus:outline-none focus:text-gray-900">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="md:hidden hidden bg-white border-t border-gray-200">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="#" class="block px-3 py-2 text-gray-900 hover:text-accent font-medium">Colecție</a>
+                <a href="#" class="block px-3 py-2 text-gray-500 hover:text-accent font-medium">Rezervările Mele</a>
+                <a href="#" class="block px-3 py-2 text-gray-500 hover:text-accent font-medium">Conectare</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="relative bg-gradient-to-br from-primary via-gray-900 to-accent text-white overflow-hidden">
+        <div class="absolute inset-0">
+            <img class="w-full h-full object-cover opacity-20"
+                src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1600&auto=format&fit=crop"
+                alt="Hero Background">
+        </div>
+        <!-- Animated background elements -->
+        <div class="absolute inset-0">
+            <div class="absolute top-10 left-10 w-20 h-20 bg-accent opacity-10 rounded-full animate-pulse"></div>
+            <div class="absolute top-32 right-20 w-16 h-16 bg-white opacity-5 rounded-full animate-bounce"></div>
+            <div class="absolute bottom-20 left-1/4 w-12 h-12 bg-accent opacity-20 rounded-full animate-ping"></div>
+        </div>
+        <div class="relative max-w-7xl mx-auto py-32 px-4 sm:px-6 lg:px-8 text-center">
+            <div class="animate-fade-in-up">
+                <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                    Descoperă Tendințele Sezonului
+                </h1>
+                <p class="mt-6 text-xl md:text-2xl text-gray-200 max-w-4xl mx-auto leading-relaxed">
+                    Probează cele mai noi produse de modă în magazinul nostru făcând o rezervare inteligentă de cabină. 
+                    <span class="text-accent font-semibold">Nu mai sta la coadă.</span>
+                </p>
+                <div class="mt-12 flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="#collection"
+                        class="inline-flex items-center justify-center bg-gradient-to-r from-accent to-indigo-600 border border-transparent rounded-xl py-4 px-8 font-semibold text-white hover:from-indigo-600 hover:to-accent transition-all duration-300 shadow-2xl hover:shadow-accent/25 transform hover:scale-105">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                        </svg>
+                        Începe Cumpărăturile
+                    </a>
+                    <a href="#collection"
+                        class="inline-flex items-center justify-center bg-transparent border-2 border-white rounded-xl py-4 px-8 font-semibold text-white hover:bg-white hover:text-gray-900 transition-all duration-300">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                        </svg>
+                        Vezi Demo
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main id="collection" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-8 gap-4">
+            <div>
+                <h2 class="text-3xl font-bold text-gray-900">Colecție Specială</h2>
+                <p class="mt-2 text-gray-500">Piesele cele mai speciale selectate pentru tine.</p>
+            </div>
+            <!-- Filter Categories -->
+            <div class="flex flex-wrap gap-2 w-full sm:w-auto">
+                <button class="px-4 py-2 bg-gray-900 text-white rounded-full text-sm">Toate</button>
+                <button
+                    class="px-4 py-2 bg-gray-200 text-gray-700 rounded-full text-sm hover:bg-gray-300">Rochii</button>
+                <button
+                    class="px-4 py-2 bg-gray-200 text-gray-700 rounded-full text-sm hover:bg-gray-300">Costume</button>
+            </div>
+        </div>
+
+        <!-- Product Grid -->
+        <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <!-- Products will be loaded here -->
+        </div>
+
+    </main>
+
+    <!-- Reservation Modal -->
+    <div id="reservation-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <h3 class="text-lg font-medium text-gray-900 mb-4" id="modal-product-name">Rezervare pentru: Produs</h3>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Data</label>
+                        <input type="date" id="res-date" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Ora</label>
+                        <select id="res-time" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent">
+                            <option value="">Selectează ora</option>
+                            <option value="09:00">09:00</option>
+                            <option value="09:30">09:30</option>
+                            <option value="10:00">10:00</option>
+                            <option value="10:30">10:30</option>
+                            <option value="11:00">11:00</option>
+                            <option value="11:30">11:30</option>
+                            <option value="12:00">12:00</option>
+                            <option value="12:30">12:30</option>
+                            <option value="13:00">13:00</option>
+                            <option value="13:30">13:30</option>
+                            <option value="14:00">14:00</option>
+                            <option value="14:30">14:30</option>
+                            <option value="15:00">15:00</option>
+                            <option value="15:30">15:30</option>
+                            <option value="16:00">16:00</option>
+                            <option value="16:30">16:30</option>
+                            <option value="17:00">17:00</option>
+                            <option value="17:30">17:30</option>
+                            <option value="18:00">18:00</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Cabina</label>
+                        <select id="res-cabin" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent">
+                            <option value="">Selectează cabina</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end space-x-3 mt-6">
+                    <button onclick="closeModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">Anulează</button>
+                    <button onclick="submitReservation()" class="px-4 py-2 bg-accent text-white rounded-md hover:bg-indigo-700">Confirmă Rezervarea</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3 text-center">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
+                    <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">Rezervare Confirmată!</h3>
+                <p class="text-sm text-gray-500 mb-4">Codul tău de acces este:</p>
+                <p class="text-2xl font-bold text-accent mb-4" id="success-code">ABC123</p>
+                <p class="text-xs text-gray-400 mb-6">Prezintă acest cod la intrarea în cabină</p>
+                <button onclick="closeSuccessModal()" class="px-6 py-2 bg-accent text-white rounded-md hover:bg-indigo-700">Închide</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>            <!-- Loading Skeletons -->
+            <div class="animate-pulse bg-white rounded-xl shadow p-4 h-96"></div>
+            <div class="animate-pulse bg-white rounded-xl shadow p-4 h-96"></div>
+            <div class="animate-pulse bg-white rounded-xl shadow p-4 h-96"></div>
+            <div class="animate-pulse bg-white rounded-xl shadow p-4 h-96"></div>
+        </div>
+
+    </main>
+
+    <!-- Reservation Modal -->
+    <div id="reservation-modal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title"
+        role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"
+                onclick="closeModal()"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div
+                class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div
+                            class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-indigo-100 sm:mx-0 sm:h-10 sm:w-10">
+                            <svg class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Kabin Rezervasyonu
+                            </h3>
+                            <div class="mt-2">
+                                <p class="text-sm text-gray-500 mb-4" id="modal-product-name">Ürün Seçilmedi</p>
+
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Tarih</label>
+                                <input type="date" id="res-date"
+                                    class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border p-2 mb-3">
+
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Saat</label>
+                                <input type="time" id="res-time"
+                                    class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border p-2 mb-3"
+                                    value="14:00">
+
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Kabin Seçimi</label>
+                                <select id="res-cabin"
+                                    class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border p-2 mb-4">
+                                    <option value="1">Kabin 1 (Standart)</option>
+                                    <option value="2">Kabin 2 (Geniş)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button type="button" onclick="submitReservation()"
+                        class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
+                        Onayla
+                    </button>
+                    <button type="button" onclick="closeModal()"
+                        class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        İptal
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+            <div
+                class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-sm sm:w-full p-6 text-center relative">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
+                    <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900">Rezervasyon Başarılı!</h3>
+                <p class="text-sm text-gray-500 mt-2">Mağazaya geldiğinizde bu kodu gösterin:</p>
+                <div class="mt-4 p-3 bg-gray-100 rounded-lg border border-gray-200">
+                    <span class="text-2xl font-mono font-bold text-indigo-600 tracking-widest"
+                        id="success-code">CODE</span>
+                </div>
+                <button onclick="closeSuccessModal()"
+                    class="mt-6 w-full bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 transition">Tamam</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        const API_URL = 'http://localhost:5000/api/v1/products';
+        let selectedProduct = null;
+
+        async function loadProducts() {
+            try {
+                const response = await axios.get(API_URL);
+                const products = response.data;
+                const container = document.getElementById('product-list');
+
+                if (products.length === 0) {
+                    container.innerHTML = '<p class="col-span-4 text-center text-gray-500">Henüz ürün bulunmuyor.</p>';
+                    return;
+                }
+
+                container.innerHTML = products.map(p => `
+                    <div class="product-card bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100 cursor-pointer group">
+                        <div class="h-80 overflow-hidden relative">
+                            <img src="${p.imageUrl || 'https://placehold.co/400x600'}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            ${p.stock < 5 ? '<span class="absolute top-4 right-4 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">Son ' + p.stock + ' Ürün</span>' : ''}
+                        </div>
+                        <div class="p-6">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="text-lg font-bold text-gray-900 mb-1">${p.name}</h3>
+                                    <p class="text-sm text-gray-500">${p.color} • ${p.size}</p>
+                                </div>
+                                <span class="text-lg font-bold text-accent">${p.price} ₺</span>
+                            </div>
+                            <button onclick="openModal('${p.id}', '${p.name}')" class="mt-4 w-full bg-primary text-white py-3 rounded-xl font-medium hover:bg-gray-800 transition active:scale-95">
+                                Kabin Ayır
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (error) {
+                console.error("Hata:", error);
+                document.getElementById('product-list').innerHTML = `
+                    <div class="col-span-4 text-center py-12">
+                        <p class="text-red-500 font-medium">Veriler yüklenirken bir sorun oluştu.</p>
+                        <p class="text-sm text-gray-400 mt-2">Lütfen sunucunun açık olduğundan emin olun.</p>
+                    </div>`;
+            }
+        }
+
+        // Modal Functions
+        function openModal(id, name) {
+            selectedProduct = id;
+            document.getElementById('modal-product-name').innerText = name;
+            document.getElementById('reservation-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('reservation-modal').classList.add('hidden');
+        }
+
+        async function submitReservation() {
+            // Demo Logic for Frontend UI testing before API bind
+            // Real logic involves POST request
+            const date = document.getElementById('res-date').value;
+            const time = document.getElementById('res-time').value;
+
+            if (!date || !time) {
+                alert("Lütfen tarih ve saat seçin.");
+                return;
+            }
+
+            // Simulate Success
+            closeModal();
+            const fakeCode = 'RES-' + Math.floor(Math.random() * 10000);
+            document.getElementById('success-code').innerText = fakeCode;
+            document.getElementById('success-modal').classList.remove('hidden');
+        }
+
+        function closeSuccessModal() {
+            document.getElementById('success-modal').classList.add('hidden');
+        }
+
+        // Initialize
+        loadProducts();
+
+    </script>
+</body>
+
+</html>
