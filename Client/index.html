@@ -110,9 +110,9 @@
                 
                 <!-- Desktop Menu -->
                 <div class="hidden md:flex items-center space-x-8">
-                    <a href="#" class="text-gray-900 hover:text-accent font-medium">Colecție</a>
-                    <a href="#" class="text-gray-500 hover:text-accent font-medium">Rezervările Mele</a>
-                    <a href="#" class="text-gray-500 hover:text-accent font-medium">Conectare</a>
+                    <a href="#collection" class="text-gray-900 hover:text-accent font-medium">Colecție</a>
+                    <a href="#" onclick="openMyReservationsModal(); return false;" id="my-reservations-btn" class="text-gray-500 hover:text-accent font-medium">Rezervările Mele</a>
+                    <a href="#" onclick="openLoginModal(); return false;" id="login-btn" class="text-gray-500 hover:text-accent font-medium">Conectare</a>
                 </div>
 
                 <!-- Mobile Menu Button -->
@@ -129,9 +129,11 @@
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="md:hidden hidden bg-white border-t border-gray-200">
             <div class="px-2 pt-2 pb-3 space-y-1">
-                <a href="#" class="block px-3 py-2 text-gray-900 hover:text-accent font-medium">Colecție</a>
-                <a href="#" class="block px-3 py-2 text-gray-500 hover:text-accent font-medium">Rezervările Mele</a>
-                <a href="#" class="block px-3 py-2 text-gray-500 hover:text-accent font-medium">Conectare</a>
+                <a href="#collection" class="block px-3 py-2 text-gray-900 hover:text-accent font-medium">Colecție</a>
+                <div id="login-btn-mobile">
+                    <a href="#" onclick="openMyReservationsModal(); document.getElementById('mobile-menu').classList.add('hidden'); return false;" class="block px-3 py-2 text-gray-500 hover:text-accent font-medium">Rezervările Mele</a>
+                    <a href="#" onclick="openLoginModal(); document.getElementById('mobile-menu').classList.add('hidden'); return false;" class="block px-3 py-2 text-gray-500 hover:text-accent font-medium">Conectare</a>
+                </div>
             </div>
         </div>
     </nav>
@@ -188,11 +190,9 @@
             </div>
             <!-- Filter Categories -->
             <div class="flex flex-wrap gap-2 w-full sm:w-auto">
-                <button class="px-4 py-2 bg-gray-900 text-white rounded-full text-sm">Toate</button>
-                <button
-                    class="px-4 py-2 bg-gray-200 text-gray-700 rounded-full text-sm hover:bg-gray-300">Rochii</button>
-                <button
-                    class="px-4 py-2 bg-gray-200 text-gray-700 rounded-full text-sm hover:bg-gray-300">Costume</button>
+                <button onclick="filterProducts('all')" id="filter-all" class="px-4 py-2 bg-gray-900 text-white rounded-full text-sm">Toate</button>
+                <button onclick="filterProducts('rochii')" id="filter-rochii" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-full text-sm hover:bg-gray-300">Rochii</button>
+                <button onclick="filterProducts('costume')" id="filter-costume" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-full text-sm hover:bg-gray-300">Costume</button>
             </div>
         </div>
 
@@ -275,182 +275,121 @@
         </div>
     </div>
 
+
+    <!-- My Reservations Modal -->
+    <div id="my-reservations-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-bold text-gray-900">Rezervările Mele</h2>
+                    <button onclick="closeMyReservationsModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div id="reservations-list" class="p-6">
+                <div class="text-center py-8">
+                    <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-accent mb-4"></div>
+                    <p class="text-gray-500">Se încarcă rezervările...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-bold text-gray-900">Conectare</h2>
+                    <button onclick="closeLoginModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6">
+                <form onsubmit="handleLogin(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                        <input type="email" id="login-email" required 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent"
+                               placeholder="exemplu@email.com">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Parolă</label>
+                        <input type="password" id="login-password" required 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent"
+                               placeholder="••••••••">
+                    </div>
+                    <button type="submit" 
+                            class="w-full bg-gradient-to-r from-accent to-indigo-600 text-white py-3 px-6 rounded-lg hover:from-indigo-600 hover:to-accent transition-all duration-300 font-semibold">
+                        Conectare
+                    </button>
+                </form>
+                <div class="mt-4 text-center">
+                    <p class="text-sm text-gray-600">
+                        Nu ai cont? 
+                        <a href="#" onclick="openRegisterModal(); closeLoginModal(); return false;" class="text-accent hover:underline font-medium">Înregistrează-te</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="register-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-bold text-gray-900">Înregistrare</h2>
+                    <button onclick="closeRegisterModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6">
+                <form onsubmit="handleRegister(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Nume</label>
+                        <input type="text" id="register-name" required 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent"
+                               placeholder="Numele tău">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                        <input type="email" id="register-email" required 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent"
+                               placeholder="exemplu@email.com">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Parolă</label>
+                        <input type="password" id="register-password" required minlength="6"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent"
+                               placeholder="Minim 6 caractere">
+                    </div>
+                    <button type="submit" 
+                            class="w-full bg-gradient-to-r from-accent to-indigo-600 text-white py-3 px-6 rounded-lg hover:from-indigo-600 hover:to-accent transition-all duration-300 font-semibold">
+                        Înregistrează-te
+                    </button>
+                </form>
+                <div class="mt-4 text-center">
+                    <p class="text-sm text-gray-600">
+                        Ai deja cont? 
+                        <a href="#" onclick="openLoginModal(); closeRegisterModal(); return false;" class="text-accent hover:underline font-medium">Conectează-te</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="app.js"></script>
 </body>
 
-</html>            <!-- Loading Skeletons -->
-            <div class="animate-pulse bg-white rounded-xl shadow p-4 h-96"></div>
-            <div class="animate-pulse bg-white rounded-xl shadow p-4 h-96"></div>
-            <div class="animate-pulse bg-white rounded-xl shadow p-4 h-96"></div>
-            <div class="animate-pulse bg-white rounded-xl shadow p-4 h-96"></div>
-        </div>
-
-    </main>
-
-    <!-- Reservation Modal -->
-    <div id="reservation-modal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title"
-        role="dialog" aria-modal="true">
-        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"
-                onclick="closeModal()"></div>
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            <div
-                class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                    <div class="sm:flex sm:items-start">
-                        <div
-                            class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-indigo-100 sm:mx-0 sm:h-10 sm:w-10">
-                            <svg class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                        </div>
-                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Kabin Rezervasyonu
-                            </h3>
-                            <div class="mt-2">
-                                <p class="text-sm text-gray-500 mb-4" id="modal-product-name">Ürün Seçilmedi</p>
-
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Tarih</label>
-                                <input type="date" id="res-date"
-                                    class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border p-2 mb-3">
-
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Saat</label>
-                                <input type="time" id="res-time"
-                                    class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border p-2 mb-3"
-                                    value="14:00">
-
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Kabin Seçimi</label>
-                                <select id="res-cabin"
-                                    class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border p-2 mb-4">
-                                    <option value="1">Kabin 1 (Standart)</option>
-                                    <option value="2">Kabin 2 (Geniş)</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                    <button type="button" onclick="submitReservation()"
-                        class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
-                        Onayla
-                    </button>
-                    <button type="button" onclick="closeModal()"
-                        class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                        İptal
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Success Modal -->
-    <div id="success-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
-        <div class="flex items-center justify-center min-h-screen px-4">
-            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
-            <div
-                class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-sm sm:w-full p-6 text-center relative">
-                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
-                    <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                </div>
-                <h3 class="text-lg font-medium text-gray-900">Rezervasyon Başarılı!</h3>
-                <p class="text-sm text-gray-500 mt-2">Mağazaya geldiğinizde bu kodu gösterin:</p>
-                <div class="mt-4 p-3 bg-gray-100 rounded-lg border border-gray-200">
-                    <span class="text-2xl font-mono font-bold text-indigo-600 tracking-widest"
-                        id="success-code">CODE</span>
-                </div>
-                <button onclick="closeSuccessModal()"
-                    class="mt-6 w-full bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 transition">Tamam</button>
-            </div>
-        </div>
-    </div>
-
-
-    <script>
-        const API_URL = 'http://localhost:5000/api/v1/products';
-        let selectedProduct = null;
-
-        async function loadProducts() {
-            try {
-                const response = await axios.get(API_URL);
-                const products = response.data;
-                const container = document.getElementById('product-list');
-
-                if (products.length === 0) {
-                    container.innerHTML = '<p class="col-span-4 text-center text-gray-500">Henüz ürün bulunmuyor.</p>';
-                    return;
-                }
-
-                container.innerHTML = products.map(p => `
-                    <div class="product-card bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100 cursor-pointer group">
-                        <div class="h-80 overflow-hidden relative">
-                            <img src="${p.imageUrl || 'https://placehold.co/400x600'}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                            ${p.stock < 5 ? '<span class="absolute top-4 right-4 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">Son ' + p.stock + ' Ürün</span>' : ''}
-                        </div>
-                        <div class="p-6">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <h3 class="text-lg font-bold text-gray-900 mb-1">${p.name}</h3>
-                                    <p class="text-sm text-gray-500">${p.color} • ${p.size}</p>
-                                </div>
-                                <span class="text-lg font-bold text-accent">${p.price} ₺</span>
-                            </div>
-                            <button onclick="openModal('${p.id}', '${p.name}')" class="mt-4 w-full bg-primary text-white py-3 rounded-xl font-medium hover:bg-gray-800 transition active:scale-95">
-                                Kabin Ayır
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
-
-            } catch (error) {
-                console.error("Hata:", error);
-                document.getElementById('product-list').innerHTML = `
-                    <div class="col-span-4 text-center py-12">
-                        <p class="text-red-500 font-medium">Veriler yüklenirken bir sorun oluştu.</p>
-                        <p class="text-sm text-gray-400 mt-2">Lütfen sunucunun açık olduğundan emin olun.</p>
-                    </div>`;
-            }
-        }
-
-        // Modal Functions
-        function openModal(id, name) {
-            selectedProduct = id;
-            document.getElementById('modal-product-name').innerText = name;
-            document.getElementById('reservation-modal').classList.remove('hidden');
-        }
-
-        function closeModal() {
-            document.getElementById('reservation-modal').classList.add('hidden');
-        }
-
-        async function submitReservation() {
-            // Demo Logic for Frontend UI testing before API bind
-            // Real logic involves POST request
-            const date = document.getElementById('res-date').value;
-            const time = document.getElementById('res-time').value;
-
-            if (!date || !time) {
-                alert("Lütfen tarih ve saat seçin.");
-                return;
-            }
-
-            // Simulate Success
-            closeModal();
-            const fakeCode = 'RES-' + Math.floor(Math.random() * 10000);
-            document.getElementById('success-code').innerText = fakeCode;
-            document.getElementById('success-modal').classList.remove('hidden');
-        }
-
-        function closeSuccessModal() {
-            document.getElementById('success-modal').classList.add('hidden');
-        }
-
-        // Initialize
-        loadProducts();
-
-    </script>
-</body>
 
 </html>

@@ -28,12 +28,12 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 // Helper pentru a obține connection string din variabile de mediu (Docker) sau appsettings
-var connectionString = Environment.GetEnvironmentVariable("Supabase_ConnectionString") 
+var connectionString = Environment.GetEnvironmentVariable("SqlServer_ConnectionString") 
                        ?? builder.Configuration.GetConnectionString("DefaultConnection");
 
 if (string.IsNullOrEmpty(connectionString))
 {
-    throw new InvalidOperationException("Connection string-ul bazei de date lipsește! Vă rugăm să setați variabila de mediu Supabase_ConnectionString sau DefaultConnection în appsettings.json");
+    throw new InvalidOperationException("Connection string-ul bazei de date lipsește! Vă rugăm să setați variabila de mediu SqlServer_ConnectionString sau DefaultConnection în appsettings.json");
 }
 
 // Loghează connection string-ul (mascheaza parola pentru securitate)
@@ -44,7 +44,7 @@ Console.WriteLine($"Se folosește connection string-ul: {maskedConnStr}");
 
 // Baza de date
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseSqlServer(connectionString));
 
 // Repository Pattern
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -52,6 +52,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 // Servicii
 builder.Services.AddScoped<IReservationService, ReservationService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 // Seed Data Service
 builder.Services.AddScoped<SeedDataService>();
@@ -100,7 +101,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "SmartStore API v1");
-        c.RoutePrefix = string.Empty; // Swagger la root
+        c.RoutePrefix = "swagger"; // Swagger la /swagger
     });
 }
 
@@ -114,11 +115,5 @@ app.MapControllers();
 
 // Health check endpoint
 app.MapGet("/health", () => new { Status = "Sănătos", Timestamp = DateTime.UtcNow });
-
-app.Run();
-app.UseCors("AllowAll");
-// app.UseHttpsRedirection(); // Disable for simple Docker setup on 8080/http
-app.UseAuthorization();
-app.MapControllers();
 
 app.Run();

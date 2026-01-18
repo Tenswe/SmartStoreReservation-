@@ -44,6 +44,28 @@ public class ReservationsController : ControllerBase
     }
 
     /// <summary>
+    /// Obține rezervările unui utilizator specific
+    /// </summary>
+    [HttpGet("user/{userId}")]
+    public async Task<ActionResult<List<ReservationDto>>> GetUserReservations(Guid userId)
+    {
+        _logger.LogInformation("Se obțin rezervările pentru utilizatorul {UserId}", userId);
+        var reservations = await _reservationService.GetUserReservationsAsync(userId);
+        return Ok(reservations);
+    }
+
+    /// <summary>
+    /// Anulează o rezervare
+    /// </summary>
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> CancelReservation(long id)
+    {
+        _logger.LogInformation("Se anulează rezervarea {ReservationId}", id);
+        await _reservationService.CancelReservationAsync(id);
+        return Ok(new { Message = "Rezervarea a fost anulată cu succes." });
+    }
+
+    /// <summary>
     /// Obține cabinele disponibile pentru un produs, dată și oră specifice
     /// </summary>
     [HttpGet("available-cabins")]

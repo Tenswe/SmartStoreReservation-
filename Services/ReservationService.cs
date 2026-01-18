@@ -10,6 +10,8 @@ public interface IReservationService
 {
     Task<string> CreateReservationAsync(CreateReservationDto dto);
     Task<List<ReservationDto>> GetReservationsAsync();
+    Task<List<ReservationDto>> GetUserReservationsAsync(Guid userId);
+    Task CancelReservationAsync(long reservationId);
     Task<List<AvailableCabinDto>> GetAvailableCabinsAsync(long productId, DateTime date, TimeSpan time);
 }
 
@@ -30,6 +32,54 @@ public class ReservationService : IReservationService
     {
         var reservations = await _unitOfWork.Repository<Reservation>().GetAllAsync();
         return _mapper.Map<List<ReservationDto>>(reservations);
+    }
+
+    public async Task<List<ReservationDto>> GetUserReservationsAsync(Guid userId)
+    {
+        _logger.LogInformation("Se obțin rezervările pentru utilizatorul {UserId}", userId);
+        
+        var reservations = await _unitOfWork.Repository<Reservation>()
+            .FindAsync(r => r.UserId == userId);
+        
+        var reservationDtos = new List<ReservationDto>();
+        
+        foreach (var reservation in reservations.OrderByDescending(r => r.Date))
+        {
+            var dto = _mapper.Map<ReservationDto>(reservation);
+            
+            // Obține detalii suplimentare
+            var product = await _unitOfWork.Repository<Product>().GetByIdAsync(reservation.ProductId);
+            var cabin = await _unitOfWork.Repository<Cabin>().GetByIdAsync(reservation.CabinId);
+            
+            dto.ProductName = product?.Name;
+            dto.CabinNumber = cabin?.CabinNumber ?? 0;
+            
+            reservationDtos.Add(dto);
+        }
+        
+        return reservationDtos;
+    }
+
+    public async Task CancelReservationAsync(long reservationId)
+    {
+        _logger.LogInformation("Se anulează rezervarea {ReservationId}", reservationId);
+        
+        var reservation = await _unitOfWork.Repository<Reservation>().GetByIdAsync(reservationId);
+        if (reservation == null)
+        {
+            throw new KeyNotFoundException("Rezervarea nu a fost găsită");
+        }
+        
+        if (reservation.Status == "Anulată")
+        {
+            throw new InvalidOperationException("Rezervarea este deja anulată");
+        }
+        
+        reservation.Status = "Anulată";
+        await _unitOfWork.Repository<Reservation>().UpdateAsync(reservation);
+        await _unitOfWork.SaveChangesAsync();
+        
+        _logger.LogInformation("Rezervarea {ReservationId} a fost anulată cu succes", reservationId);
     }
 
     public async Task<string> CreateReservationAsync(CreateReservationDto dto)

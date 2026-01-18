@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using SmartStoreReservation.Core.Entities;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace SmartStoreReservation.Data;
 
@@ -51,6 +53,7 @@ public class SeedDataService
                 Id = Guid.Parse("11111111-1111-1111-1111-111111111111"),
                 Name = "Ana Popescu", 
                 Email = "ana.popescu@email.com",
+                PasswordHash = HashPassword("parola123"),
                 Measurements = "M: 38, Înălțime: 165cm",
                 StylePreferences = "Elegant, Modern"
             },
@@ -59,6 +62,7 @@ public class SeedDataService
                 Id = Guid.Parse("22222222-2222-2222-2222-222222222222"),
                 Name = "Maria Ionescu", 
                 Email = "maria.ionescu@email.com",
+                PasswordHash = HashPassword("parola123"),
                 Measurements = "M: 40, Înălțime: 170cm",
                 StylePreferences = "Business, Clasic"
             },
@@ -67,6 +71,7 @@ public class SeedDataService
                 Id = Guid.Parse("33333333-3333-3333-3333-333333333333"),
                 Name = "Elena Dumitrescu", 
                 Email = "elena.dumitrescu@email.com",
+                PasswordHash = HashPassword("parola123"),
                 Measurements = "M: 36, Înălțime: 160cm",
                 StylePreferences = "Casual, Trendy"
             }
@@ -110,7 +115,7 @@ public class SeedDataService
                 Color = "Roz Pudră", 
                 Stock = 5, 
                 Price = 299.99m, 
-                ImageUrl = "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400&h=600&fit=crop" 
+                ImageUrl = "https://images.unsplash.com/photo-eine-frau-in-einem-kleid-mit-blauem-blumenprint-FGOpeBaiklg?w=800&h=1000&fit=crop" 
             },
             new() 
             { 
@@ -120,7 +125,7 @@ public class SeedDataService
                 Color = "Negru", 
                 Stock = 3, 
                 Price = 599.99m, 
-                ImageUrl = "https://images.unsplash.com/photo-1566479179817-c0b5b4b4b1e5?w=400&h=600&fit=crop" 
+                ImageUrl = "https://images.unsplash.com/photo-a-woman-posing-for-a-picture-in-a-black-dress-zj3GjVWzCIE?w=800&h=1000&fit=crop" 
             },
             new() 
             { 
@@ -130,7 +135,7 @@ public class SeedDataService
                 Color = "Albastru Royal", 
                 Stock = 4, 
                 Price = 449.99m, 
-                ImageUrl = "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=400&h=600&fit=crop" 
+                ImageUrl = "https://images.unsplash.com/photo-eine-frau-in-einem-kleid-mit-blauem-blumenprint-FGOpeBaiklg?w=800&h=1000&fit=crop" 
             },
             
             // București - Costume Business
@@ -142,7 +147,7 @@ public class SeedDataService
                 Color = "Gri Antracit", 
                 Stock = 6, 
                 Price = 799.99m, 
-                ImageUrl = "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=400&h=600&fit=crop" 
+                ImageUrl = "https://images.unsplash.com/photo-happy-cheerful-business-lady-in-blue-formal-clothes-blJ3pjjgwZ0?w=800&h=1000&fit=crop" 
             },
             new() 
             { 
@@ -152,7 +157,7 @@ public class SeedDataService
                 Color = "Bleumarin", 
                 Stock = 4, 
                 Price = 699.99m, 
-                ImageUrl = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=600&fit=crop" 
+                ImageUrl = "https://images.unsplash.com/photo-a-woman-in-a-blue-suit-is-posing-for-a-picture-Nb3ptC1E37Q?w=800&h=1000&fit=crop" 
             },
             
             // Cluj - Ținute Casual
@@ -164,7 +169,7 @@ public class SeedDataService
                 Color = "Albastru Deschis", 
                 Stock = 8, 
                 Price = 189.99m, 
-                ImageUrl = "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=600&fit=crop" 
+                ImageUrl = "https://images.unsplash.com/photo-woman-in-blue-denim-jacket-0SOwslg0-YY?w=800&h=1000&fit=crop" 
             },
             new() 
             { 
@@ -174,7 +179,7 @@ public class SeedDataService
                 Color = "Bej", 
                 Stock = 5, 
                 Price = 349.99m, 
-                ImageUrl = "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=400&h=600&fit=crop" 
+                ImageUrl = "https://images.unsplash.com/photo-woman-in-brown-knit-sweater-and-white-pants-hPnUtt4LWJo?w=800&h=1000&fit=crop" 
             },
             new() 
             { 
@@ -184,7 +189,7 @@ public class SeedDataService
                 Color = "Verde Oliv", 
                 Stock = 6, 
                 Price = 229.99m, 
-                ImageUrl = "https://images.unsplash.com/photo-1506629905607-d405d7d3b0d2?w=400&h=600&fit=crop" 
+                ImageUrl = "https://images.unsplash.com/photo-a-woman-in-a-woman-in-black-top-and-black-pants-u4vvfCC5mQ0?w=800&h=1000&fit=crop" 
             },
             
             // Timișoara - Mix Premium
@@ -196,7 +201,7 @@ public class SeedDataService
                 Color = "Bordo", 
                 Stock = 3, 
                 Price = 399.99m, 
-                ImageUrl = "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=400&h=600&fit=crop" 
+                ImageUrl = "https://images.unsplash.com/photo-eine-frau-in-einem-kleid-mit-blauem-blumenprint-FGOpeBaiklg?w=800&h=1000&fit=crop" 
             },
             new() 
             { 
@@ -206,7 +211,7 @@ public class SeedDataService
                 Color = "Negru", 
                 Stock = 2, 
                 Price = 999.99m, 
-                ImageUrl = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=600&fit=crop" 
+                ImageUrl = "https://images.unsplash.com/photo-happy-cheerful-business-lady-in-blue-formal-clothes-blJ3pjjgwZ0?w=800&h=1000&fit=crop" 
             },
             new() 
             { 
@@ -216,7 +221,7 @@ public class SeedDataService
                 Color = "Crem", 
                 Stock = 4, 
                 Price = 279.99m, 
-                ImageUrl = "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=400&h=600&fit=crop" 
+                ImageUrl = "https://images.unsplash.com/photo-woman-sits-outdoors-in-a-floral-dress-2j4AtTew4i8?w=800&h=1000&fit=crop" 
             },
             new() 
             { 
@@ -226,7 +231,7 @@ public class SeedDataService
                 Color = "Maro Cognac", 
                 Stock = 3, 
                 Price = 899.99m, 
-                ImageUrl = "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&h=600&fit=crop" 
+                ImageUrl = "https://images.unsplash.com/photo-woman-in-black-jacket-beside-woman-in-blue-denim-jacket-WdcoO8j8okk?w=800&h=1000&fit=crop" 
             }
         };
         
@@ -301,5 +306,12 @@ public class SeedDataService
         
         _context.Reservations.AddRange(reservations);
         await _context.SaveChangesAsync();
+    }
+
+    private static string HashPassword(string password)
+    {
+        using var sha256 = SHA256.Create();
+        var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+        return Convert.ToBase64String(hashedBytes);
     }
 }

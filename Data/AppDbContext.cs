@@ -42,7 +42,7 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Product>(e => {
              e.Property(x => x.Id).HasColumnName("id");
              e.Property(x => x.Name).HasColumnName("name");
-             e.Property(x => x.Price).HasColumnName("price");
+             e.Property(x => x.Price).HasColumnName("price").HasColumnType("decimal(18,2)");
              e.Property(x => x.Stock).HasColumnName("stock");
              e.Property(x => x.Size).HasColumnName("size");
              e.Property(x => x.Color).HasColumnName("color");
@@ -70,6 +70,7 @@ public class AppDbContext : DbContext
              e.Property(x => x.Id).HasColumnName("id");
              e.Property(x => x.Name).HasColumnName("name");
              e.Property(x => x.Email).HasColumnName("email");
+             e.Property(x => x.PasswordHash).HasColumnName("password_hash");
              e.Property(x => x.Measurements).HasColumnName("measurements");
              e.Property(x => x.StylePreferences).HasColumnName("style_preferences");
              e.Property(x => x.CreatedAt).HasColumnName("created_at");
@@ -110,5 +111,24 @@ public class AppDbContext : DbContext
             .HasOne(pc => pc.Category)
             .WithMany(c => c.ProductCategories)
             .HasForeignKey(pc => pc.CategoryId);
+
+        // Reservations - Configure relationships with NoAction to avoid cascade cycles
+        modelBuilder.Entity<Reservation>()
+            .HasOne(r => r.User)
+            .WithMany()
+            .HasForeignKey(r => r.UserId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<Reservation>()
+            .HasOne(r => r.Product)
+            .WithMany()
+            .HasForeignKey(r => r.ProductId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<Reservation>()
+            .HasOne(r => r.Cabin)
+            .WithMany()
+            .HasForeignKey(r => r.CabinId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

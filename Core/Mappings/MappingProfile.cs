@@ -33,5 +33,12 @@ public class MappingProfile : Profile
         CreateMap<Cabin, AvailableCabinDto>()
             .ForMember(dest => dest.ShopName, opt => opt.MapFrom(src => src.Shop!.Name))
             .ForMember(dest => dest.IsAvailable, opt => opt.Ignore());
+
+        // User mappings
+        CreateMap<User, UserDto>();
+        CreateMap<RegisterDto, User>()
+            .ForMember(dest => dest.Id, opt => opt.Ignore())
+            .ForMember(dest => dest.PasswordHash, opt => opt.Ignore())
+            .ForMember(dest => dest.CreatedAt, opt => opt.Ignore());
     }
 }
